@@ -18,5 +18,4 @@ public class JsonUtils {
   public static ObjectMapper objectMapper() {
     return OBJECT_MAPPER;
   }
-
 }

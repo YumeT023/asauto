@@ -14,6 +14,7 @@ public record DailyExecution(
   LocalDate date,
   List<Task> tasks
 ) {
+
   private static final int MAX_DECIMALS = 1;
   private static final int SCALE = (int) pow(10, MAX_DECIMALS);
 
