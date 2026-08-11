@@ -4,16 +4,21 @@ import static com.microsoft.playwright.options.AriaRole.BUTTON;
 import static com.microsoft.playwright.options.AriaRole.LINK;
 import static com.microsoft.playwright.options.LoadState.NETWORKIDLE;
 import static com.microsoft.playwright.options.WaitForSelectorState.VISIBLE;
+import static lombok.AccessLevel.PRIVATE;
 
-import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Locator.WaitForOptions;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Page.GetByRoleOptions;
 import com.microsoft.playwright.TimeoutError;
-import lombok.extern.slf4j.Slf4j;
 import io.asall.auto.model.DailyExecution;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@NoArgsConstructor(access = PRIVATE)
 @Slf4j
-public class PutDailyExecutionAction implements Action<DailyExecution> {
+public final class PutDailyExecutionAction implements Action<DailyExecution> {
+
+  private static final Action<DailyExecution> INSTANCE = new PutDailyExecutionAction();
 
   private static final String DAILY_EXECUTION_MENU = "Daily Execution";
   private static final String DAILY_EXECUTION_HREF = "/daily-execution";
@@ -50,7 +55,7 @@ public class PutDailyExecutionAction implements Action<DailyExecution> {
     try {
       page.getByText(ERROR_TEXT)
         .first()
-        .waitFor(new Locator.WaitForOptions().setState(VISIBLE).setTimeout(ERROR_TIMEOUT_MS));
+        .waitFor(new WaitForOptions().setState(VISIBLE).setTimeout(ERROR_TIMEOUT_MS));
       return true;
     } catch (TimeoutError e) {
       return false;
@@ -69,5 +74,9 @@ public class PutDailyExecutionAction implements Action<DailyExecution> {
     page.selectOption("#mission-code-" + row, task.category());
     page.fill("#mission-percentage-" + row, task.scoreAsString());
     page.fill("#mission-comment-" + row, task.description());
+  }
+
+  public static boolean putDailyExecution(Page page, DailyExecution execution) {
+    return INSTANCE.apply(page, execution);
   }
 }

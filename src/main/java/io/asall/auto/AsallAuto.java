@@ -1,12 +1,12 @@
 package io.asall.auto;
 
+import static io.asall.auto.action.LoginAction.login;
+import static io.asall.auto.action.PutDailyExecutionAction.putDailyExecution;
+import static io.asall.auto.action.TerminateAction.terminate;
 import static java.lang.System.exit;
 
 import com.microsoft.playwright.BrowserType.LaunchOptions;
 import com.microsoft.playwright.Playwright;
-import io.asall.auto.action.LoginAction;
-import io.asall.auto.action.PutDailyExecutionAction;
-import io.asall.auto.action.TerminateAction;
 import io.asall.auto.fs.DailyExecutionsReader;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class AsallAuto {
 
       page.navigate(ASA_URL);
 
-      var isLoggedIn = new LoginAction().apply(page, null);
+      var isLoggedIn = login(page, null);
       if (!isLoggedIn) {
         log.info("Failed to login.");
         exit(1);
@@ -47,15 +47,13 @@ public class AsallAuto {
       myDailyExecutions
         .stream()
         .dropWhile(
-          e -> new PutDailyExecutionAction().apply(
-            page, e
-          )
+          d -> putDailyExecution(page, d)
         )
         .forEach(
-          e -> log.info("Failed to put daily execution: {}", e)
+          d -> log.info("Failed to put daily execution: {}", d)
         );
 
-      new TerminateAction().apply(page, browser);
+      terminate(page, browser);
     }
   }
 }
