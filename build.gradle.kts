@@ -29,19 +29,13 @@ tasks.test {
     useJUnitPlatform()
 }
 
-val copyRuntimeDeps by tasks.registering(Sync::class) {
-    from(configurations.runtimeClasspath)
-    into(layout.buildDirectory.dir("libs/lib"))
-}
-
 tasks.jar {
-    dependsOn(copyRuntimeDeps)
     manifest {
-        attributes(
-            "Main-Class" to "Asall",
-            "Class-Path" to configurations.runtimeClasspath.map { cp ->
-                cp.files.joinToString(" ") { "lib/${it.name}" }
-            },
-        )
+        attributes["Main-Class"] = "io.asall.auto.AsallAuto"
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(configurations.runtimeClasspath.map { cp ->
+        cp.files.map { if (it.isDirectory) it else zipTree(it) }
+    })
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
 }
