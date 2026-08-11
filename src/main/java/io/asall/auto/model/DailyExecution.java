@@ -7,9 +7,7 @@ import static java.lang.Math.round;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.StringJoiner;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public record DailyExecution(
   LocalDate date,
   List<Task> tasks
@@ -24,7 +22,8 @@ public record DailyExecution(
       .sum();
 
     if (total != SCALE) {
-      log.warn("Task scores must total exactly 1, got {}", total / (float) SCALE);
+      throw new IllegalArgumentException(
+        "Task scores of " + date + " must total exactly 1, got " + total / (float) SCALE);
     }
   }
 
